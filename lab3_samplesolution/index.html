@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <title>iNote</title>
+    <link rel="stylesheet" type="text/css"  href="style.css" />
+  </head>
+
+  <body onload="pullMore()">
+  
+    <div id="Checklist">
+		<div id="note">
+		</div>
+
+		<div id="more" onclick="pullMore()">
+			<p> Showing More...</p>
+		</div>
+
+    </div>
+    
+    <script>
+		function changeState(elem) {
+		var oldValue = elem.innerHTML;
+		var newvalue;
+		var noteID = elem.parentNode.getAttribute('id');
+
+		if (oldValue == 'Y') {
+			newvalue = 'N';
+		} else {
+			newvalue = 'Y';
+		}
+		var xmlhttp;
+		if (window.XMLHttpRequest) {
+			xmlhttp = new XMLHttpRequest();
+		} else {
+			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		xmlhttp.onreadystatechange = function () {
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				elem.innerHTML = xmlhttp.responseText;
+			}
+		}
+
+		xmlhttp.open("GET", "updateNoteState.php?newValue="+newvalue+"&id="+noteID, true);
+		xmlhttp.send();
+		}
+    </script>
+
+    <script>
+		lastRecord = 0;
+
+		function pullMore() {
+			var xmlhttp;
+			if (window.XMLHttpRequest) {
+				xmlhttp = new XMLHttpRequest();
+			} else {
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+          
+			xmlhttp.onreadystatechange = function () {
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+					var mesgs = document.getElementById("note");
+					mesgs.innerHTML += xmlhttp.responseText;
+				}
+			}
+			xmlhttp.open("GET", "queryNote.php?lastRecord="+lastRecord,true);
+			xmlhttp.send();
+
+			lastRecord += 3;
+      }
+    </script>
+
+  </body>
+</html>
